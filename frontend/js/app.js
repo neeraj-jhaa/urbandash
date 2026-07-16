@@ -3,9 +3,7 @@
    Resolved against the current hostname so this works whether
    the dashboard is opened via localhost or a remote host.
    ============================================================ */
-const API_BASE =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://urbandash-7rtr.onrender.com";
+const API_BASE = "https://urbandash-7rtr.onrender.com";
 
 const TEAM_LABELS = {
   support: "Support",
