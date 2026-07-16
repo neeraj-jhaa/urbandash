@@ -1,0 +1,717 @@
+/* ============================================================
+   # COLOR PALETTE — edit here to reskin the whole app
+   All colors are CSS custom properties on :root. Nothing below
+   this block should use a raw hex value.
+   ============================================================ */
+:root {
+  /* Canvas / surfaces — dispatch-room dark theme */
+  --bg-canvas: #0F1417;
+  --bg-panel: #171F26;
+  --bg-elevated: #1E2830;
+  --bg-elevated-hover: #243039;
+
+  /* Borders / dividers */
+  --border-subtle: #2A343C;
+  --border-strong: #3A4750;
+
+  /* Text */
+  --text-primary: #EDF2F4;
+  --text-secondary: #9BADB8;
+  --text-muted: #6B7C87;
+
+  /* Brand / signal — UrbanDash "live" teal-green */
+  --accent-brand: #35D0A0;
+  --accent-brand-dim: rgba(53, 208, 160, 0.14);
+  --accent-brand-strong: #29B589;
+
+  /* Urgency scale — a manifest/status-board feel */
+  --urgency-critical: #FF5A5F;
+  --urgency-critical-bg: rgba(255, 90, 95, 0.14);
+  --urgency-high: #FF9F45;
+  --urgency-high-bg: rgba(255, 159, 69, 0.14);
+  --urgency-medium: #FFD166;
+  --urgency-medium-bg: rgba(255, 209, 102, 0.14);
+  --urgency-low: #5FA8D3;
+  --urgency-low-bg: rgba(95, 168, 211, 0.14);
+
+  /* Noise / filtered-out items */
+  --noise-color: #6B7C87;
+  --noise-bg: rgba(107, 124, 135, 0.12);
+
+  /* Semantic feedback */
+  --danger: #FF5A5F;
+  --success: #35D0A0;
+}
+
+/* ============================================================
+   # TYPOGRAPHY — display / body / data font roles
+   Space Grotesk = UI chrome & headings (technical, geometric)
+   Inter          = body copy, form controls
+   IBM Plex Mono  = ids, timestamps, category/team codes
+   ============================================================ */
+:root {
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+
+  --fs-xs: 0.6875rem;   /* 11px — mono labels/timestamps */
+  --fs-sm: 0.8125rem;   /* 13px — secondary text */
+  --fs-base: 0.9375rem; /* 15px — body */
+  --fs-md: 1.0625rem;   /* 17px — card titles */
+  --fs-lg: 1.375rem;    /* 22px — section headers */
+  --fs-xl: 1.75rem;     /* 28px — page title */
+
+  --lh-tight: 1.25;
+  --lh-normal: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* ============================================================
+   # LAYOUT / SPACING — app shell grid
+   ============================================================ */
+.app-shell {
+  display: grid;
+  grid-template-columns: 288px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-subtle);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.main {
+  padding: 32px 40px 64px;
+  max-width: 1180px;
+}
+
+.main-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.main-header h1 {
+  font-size: var(--fs-xl);
+}
+
+.main-header-sub {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+
+.queue-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ============================================================
+   # COMPONENT — brand block
+   ============================================================ */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--accent-brand-dim);
+  color: var(--accent-brand);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--accent-brand-strong);
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.brand-sub {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   # COMPONENT — stats strip (sidebar counters)
+   ============================================================ */
+.stats-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stat-tile {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.stat-tile-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.stat-tile-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 6px;
+}
+
+.stat-tile.is-critical .stat-tile-value { color: var(--urgency-critical); }
+.stat-tile.is-brand .stat-tile-value { color: var(--accent-brand); }
+
+/* ============================================================
+   # COMPONENT — filter panel block
+   ============================================================ */
+.panel-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.panel-block-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-group label {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+
+.filter-toggle-row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+select, input[type="text"], textarea {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s ease;
+  width: 100%;
+}
+
+select:focus, input:focus, textarea:focus {
+  border-color: var(--accent-brand);
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-brand);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.status-dot.is-ok { background: var(--accent-brand); box-shadow: 0 0 6px var(--accent-brand); }
+.status-dot.is-error { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+
+/* ============================================================
+   # COMPONENT — buttons (no browser defaults anywhere)
+   ============================================================ */
+.btn {
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 10px 16px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.btn:active { transform: translateY(1px); }
+.btn-block { width: 100%; }
+
+.btn-primary {
+  background: var(--accent-brand);
+  color: #06231A;
+}
+.btn-primary:hover { background: var(--accent-brand-strong); }
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.btn-secondary:hover { background: var(--bg-elevated-hover); }
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.btn-ghost:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+.btn-sm { padding: 6px 12px; font-size: var(--fs-xs); }
+.btn-danger-outline {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.btn-danger-outline:hover { background: rgba(255, 90, 95, 0.1); }
+
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.view-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.view-toggle-btn.is-active {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+
+/* ============================================================
+   # COMPONENT — ticket / manifest card (signature element)
+   Styled like a waybill stub: perforated dashed divider +
+   a rotated corner "stamp" that carries the urgency signal.
+   ============================================================ */
+.ticket-card {
+  position: relative;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 18px 20px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  overflow: hidden;
+}
+
+.ticket-card:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+}
+
+.ticket-card::before {
+  /* perforated left edge, manifest-stub feel */
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--urgency-color, var(--text-muted));
+}
+
+.ticket-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.ticket-meta-row .dot-sep::before { content: "·"; margin: 0 2px; }
+
+.ticket-message {
+  font-size: var(--fs-base);
+  color: var(--text-primary);
+  line-height: var(--lh-normal);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ticket-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+
+.tag-team {
+  background: var(--bg-elevated);
+}
+
+/* the "stamp" — signature element, rotated dashed badge */
+.stamp {
+  align-self: start;
+  justify-self: end;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border: 1.5px dashed var(--urgency-color, var(--text-muted));
+  color: var(--urgency-color, var(--text-muted));
+  border-radius: 4px;
+  transform: rotate(3deg);
+  white-space: nowrap;
+}
+
+.stamp.stamp-noise {
+  border-style: dotted;
+  color: var(--noise-color);
+  border-color: var(--noise-color);
+}
+
+.ticket-card[data-urgency="critical"] { --urgency-color: var(--urgency-critical); }
+.ticket-card[data-urgency="high"]     { --urgency-color: var(--urgency-high); }
+.ticket-card[data-urgency="medium"]   { --urgency-color: var(--urgency-medium); }
+.ticket-card[data-urgency="low"]      { --urgency-color: var(--urgency-low); }
+
+.ticket-card.is-overridden .ticket-meta-row::after {
+  content: "· manually overridden";
+  color: var(--accent-brand);
+}
+
+.multi-issue-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  background: var(--accent-brand-dim);
+  color: var(--accent-brand);
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--accent-brand-strong);
+}
+
+/* Status pill */
+.status-pill {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.status-pill.status-open { background: rgba(95, 168, 211, 0.15); color: var(--urgency-low); }
+.status-pill.status-in_progress { background: rgba(255, 209, 102, 0.15); color: var(--urgency-medium); }
+.status-pill.status-resolved { background: var(--accent-brand-dim); color: var(--accent-brand); }
+
+/* ============================================================
+   # COMPONENT — empty state
+   ============================================================ */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+.empty-state-mark {
+  font-size: 32px;
+  margin-bottom: 12px;
+  color: var(--border-strong);
+}
+
+/* ============================================================
+   # COMPONENT — modal (ingest form + detail/override panel)
+   ============================================================ */
+
+
+.modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.modal-wide { max-width: 660px; }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+.modal-close:hover { color: var(--text-primary); }
+
+.modal-body {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-row label {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-toggle-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.form-toggle-row label { text-transform: none; letter-spacing: 0; font-size: var(--fs-sm); }
+
+textarea { resize: vertical; font-family: var(--font-body); }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.modal-error {
+  background: rgba(255, 90, 95, 0.1);
+  border: 1px solid var(--danger);
+  color: var(--urgency-critical);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: var(--fs-sm);
+}
+
+/* ============================================================
+   # COMPONENT — detail modal internals (built dynamically in JS)
+   ============================================================ */
+.detail-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.detail-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 18px; }
+.detail-message-block {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  white-space: pre-wrap;
+}
+.issue-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.issue-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.issue-reasoning {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+.override-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.status-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   # JS-DRIVEN UI STATE / ANIMATION LOGIC
+   Classes toggled by app.js — kept together here so state
+   styling is easy to find and swap.
+   ============================================================ */
+.is-loading { opacity: 0.5; pointer-events: none; }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: var(--fs-sm);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  z-index: 200;
+  animation: toast-in 0.2s ease-out;
+}
+.toast.toast-error { border-color: var(--danger); color: var(--urgency-critical); }
+.toast.toast-success { border-color: var(--accent-brand); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .ticket-card, .toast { transition: none; animation: none; }
+}
+
+/* ============================================================
+   # RESPONSIVE — mobile layout
+   ============================================================ */
+@media (max-width: 860px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: relative;
+    height: auto;
+    top: auto;
+  }
+  .main { padding: 24px 18px 48px; }
+  .ticket-card { grid-template-columns: 1fr; }
+  .stamp { justify-self: start; }
+}

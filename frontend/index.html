@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UrbanDash · Complaint Triage</title>
+
+<!-- ================================
+     # FONTS — Space Grotesk (display/UI), Inter (body), IBM Plex Mono (data)
+     ================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ================================
+       # APP SHELL — sidebar + main layout
+       ================================ -->
+  <div class="modal-overlay" hidden></div>
+  <div class="app-shell">
+
+    <!-- Sidebar: brand + manifest control panel (filters) -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">UD</div>
+        <div class="brand-text">
+          <div class="brand-name">UrbanDash</div>
+          <div class="brand-sub">Complaint Triage</div>
+        </div>
+      </div>
+
+      <div class="stats-strip" id="stats-strip">
+        <!-- populated by JS: open / critical / unclassified counts -->
+      </div>
+
+      <div class="panel-block">
+        <div class="panel-block-label">Manifest Filters</div>
+
+        <div class="filter-group">
+          <label for="filter-status">Status</label>
+          <select id="filter-status">
+            <option value="">All statuses</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-team">Routed team</label>
+          <select id="filter-team">
+            <option value="">All teams</option>
+            <option value="support">Support</option>
+            <option value="ops">Ops</option>
+            <option value="trust_and_safety">Trust & Safety</option>
+            <option value="finance">Finance</option>
+            <option value="hr_driver_relations">HR / Driver Relations</option>
+            <option value="legal">Legal</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-urgency">Urgency</label>
+          <select id="filter-urgency">
+            <option value="">All urgencies</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+
+        <div class="filter-group filter-toggle-row">
+          <label for="filter-noise">Show filtered / noise</label>
+          <input type="checkbox" id="filter-noise" />
+        </div>
+
+        <button class="btn btn-ghost btn-block" id="btn-reset-filters" type="button">Reset filters</button>
+      </div>
+
+      <div class="panel-block">
+        <button class="btn btn-primary btn-block" id="btn-open-ingest" type="button">
+          + Ingest complaint
+        </button>
+        <button class="btn btn-secondary btn-block" id="btn-classify-all" type="button">
+          Classify all unclassified
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <span id="api-status-dot" class="status-dot"></span>
+        <span id="api-status-text">Checking API…</span>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <header class="main-header">
+        <div>
+          <h1>Review Queue</h1>
+          <p class="main-header-sub">Live triage manifest — routed issues awaiting action</p>
+        </div>
+        <div class="view-toggle">
+          <button class="view-toggle-btn is-active" data-view="queue" type="button">Queue</button>
+          <button class="view-toggle-btn" data-view="noise" type="button">Filtered / Noise</button>
+          <button class="view-toggle-btn" data-view="unclassified" type="button">Unclassified</button>
+        </div>
+      </header>
+
+      <div id="queue-container" class="queue-container">
+        <!-- ticket cards injected here by JS -->
+      </div>
+
+      <div id="empty-state" class="empty-state" hidden>
+        <div class="empty-state-mark">◌</div>
+        <p>Nothing here right now.</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================================
+       # MODAL — ingest complaint form
+       ================================ -->
+  <div class="modal-overlay" id="ingest-modal-overlay" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Ingest raw complaint</h2>
+        <button class="modal-close" id="ingest-modal-close" type="button" aria-label="Close">&times;</button>
+      </div>
+      <form id="ingest-form" class="modal-body">
+        <div class="form-row">
+          <label for="in-channel">Channel</label>
+          <select id="in-channel" required>
+            <option value="app">App</option>
+            <option value="email">Email</option>
+            <option value="twitter_dm">Twitter DM</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="in-complainant-type">Complainant type</label>
+          <select id="in-complainant-type" required>
+            <option value="customer">Customer</option>
+            <option value="driver">Delivery driver</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="in-customer-id">Customer / driver identifier</label>
+          <input id="in-customer-id" type="text" placeholder="e.g. priya.sharma or @handle" required />
+        </div>
+        <div class="form-row">
+          <label for="in-message">Raw message</label>
+          <textarea id="in-message" rows="5" placeholder="Paste the raw complaint text exactly as received…" required></textarea>
+        </div>
+        <div class="form-row form-toggle-row">
+          <input type="checkbox" id="in-classify-now" checked />
+          <label for="in-classify-now">Classify immediately via Groq after ingest</label>
+        </div>
+        <div class="modal-error" id="ingest-error" hidden></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="ingest-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="ingest-submit">Ingest complaint</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================================
+       # MODAL — ticket detail / override
+       ================================ -->
+  <div class="modal-overlay" id="detail-modal-overlay" hidden>
+    <div class="modal modal-wide" id="detail-modal">
+      <!-- populated entirely by JS -->
+    </div>
+  </div>
+
+  <!-- ================================
+       # TOAST — lightweight status messages
+       ================================ -->
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
